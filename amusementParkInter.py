@@ -36,10 +36,8 @@ class AmusementPark(Frame):
     self.setParameterControls()
 
     #a couple useful buttons...
-    Arrivals = Button(self, text='Arrival of Cars!', command=self.calculate)
+    Arrivals = Button(self, text='Arrival of Cars!', command=self.next)
     Arrivals.grid(row = 6, column = 4, columnspan = 2)
-    Animate = Button(self, text='Animate!', command=self.animate)
-    Animate.grid(row = 6, column = 7, columnspan = 2)
     
   def genRand(self):
     for i in range(8):
@@ -86,7 +84,7 @@ class AmusementPark(Frame):
     self.theta.grid(row = 4, column = 10)
     self.theta.insert(0, "1")
 
-  def calculate(self):
+  def next(self):
     AOCroot = Tk()
     AOCroot.resizable(width=False, height=False)
     AOCroot.geometry('{}x{}'.format(720, 275))    
@@ -237,10 +235,22 @@ class ArrivalOfCars(Frame):
       self.doneBoxes[i].config(text = str(d))
 
   def next(self):
-    AOCroot = Tk()
-    AOCroot.resizable(width=False, height=False)
-    AOCroot.geometry('{}x{}'.format(720, 275))
+    PEroot = Tk()
+    PEroot.resizable(width=False, height=False)
+    PEroot.geometry('{}x{}'.format(720, 275))
+    ParkEntrance(AOCroot, self.arrivalTimes, self.serviceTime, self.doneTimes, params).grid()
 
+class ParkEntrance(Frame):
+  global seeds
+  global params
+  global serviceTimes, serviceBoxes
+  global doneBoxes, queueBoxes
+
+  def __init__(self, root, a, s, d, p):
+    self.startTimes = d
+    self.params = p
+
+    Frame.__init__(self, root)
 
 if __name__=='__main__':
   root = Tk()
