@@ -159,10 +159,11 @@ class ArrivalOfCars(Frame):
           queue2.remove(c)
         else:
           break
+
       if(len(queue1) <= len(queue2)):
         if(len(queue1) > 0):
-          queue1.append(max([queue1[-1], self.arrivalTimes[i]]) + (float(self.serviceTimes[i])/60))
-          self.doneTimes.append(max([queue1[-1], self.arrivalTimes[i]]) + (float(self.serviceTimes[i])/60))
+          queue1.append(queue1[-1] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(queue1[-1] + (float(self.serviceTimes[i])/60))
         else:
           queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
@@ -171,8 +172,8 @@ class ArrivalOfCars(Frame):
         self.queueBoxes.append(l)
       else:
         if(len(queue2) > 0):
-          queue2.append(max([queue2[-1], self.arrivalTimes[i]]) +(float(self.serviceTimes[i])/60))
-          self.doneTimes.append(max([queue2[-1], self.arrivalTimes[i]]) + (float(self.serviceTimes[i])/60))
+          queue2.append(queue2[-1] +(float(self.serviceTimes[i])/60))
+          self.doneTimes.append(queue2[-1] + (float(self.serviceTimes[i])/60))
         else:
           queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
@@ -199,7 +200,7 @@ class ArrivalOfCars(Frame):
     for s in self.serviceBoxes:
       self.serviceTimes.append(int(s.get()))
 
-    queue1 = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60)]
+    queue1 = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60)]  #append done times to each queue
     queue2 = [self.arrivalTimes[1] + (float(self.serviceTimes[1])/60)]
 
     self.doneTimes = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60), self.arrivalTimes[1] + (float(self.serviceTimes[1])/60)]
@@ -214,18 +215,19 @@ class ArrivalOfCars(Frame):
           queue2.remove(c)
         else:
           break
+
       if(len(queue1) <= len(queue2)):
         if(len(queue1) > 0):
-          queue1.append(max([queue1[-1], self.arrivalTimes[i]]) + (float(self.serviceTimes[i])/60))
-          self.doneTimes.append(max([queue1[-1], self.arrivalTimes[i]]) + (float(self.serviceTimes[i])/60))
+          queue1.append(queue1[-1] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(queue1[-1] + (float(self.serviceTimes[i])/60))
         else:
           queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
         self.queueBoxes[i].config(text = "1st")
       else:
         if(len(queue2) > 0):
-          queue2.append(max([queue2[-1], self.arrivalTimes[i]]) +(float(self.serviceTimes[i])/60))
-          self.doneTimes.append(max([queue2[-1], self.arrivalTimes[i]]) + (float(self.serviceTimes[i])/60))
+          queue2.append(queue2[-1] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(queue2[-1] + (float(self.serviceTimes[i])/60))
         else:
           queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
