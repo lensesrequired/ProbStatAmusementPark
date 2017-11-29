@@ -1,7 +1,7 @@
 from Tkinter import *
 import Tkconstants, tkFileDialog
 import amusementParkMaths, amusementParkMisc
-import os, random, math
+import os, random, math, copy
 from shutil import copyfile
 
 LAM = 0
@@ -87,7 +87,7 @@ class AmusementPark(Frame):
   def next(self):
     AOCroot = Tk()
     AOCroot.resizable(width=False, height=False)
-    AOCroot.geometry('{}x{}'.format(720, 275))    
+    AOCroot.geometry('{}x{}'.format(775, 275))    
     seeds = []
     for i in self.seedBoxes:
       seeds.append(float(i.get()))
@@ -116,6 +116,11 @@ class ArrivalOfCars(Frame):
 
     Frame.__init__(self, root)
 
+    #Family number establishment
+    Label(self, text = "Family #").grid(row = 1, column = 0)
+    for i in range(8):
+      Label(self, text = str(i + 1)).grid(row = 2 + i, column = 0)
+
     #Arrival Time calculations
     dist = [-(1/float(self.params[LAM]))*math.log(1-seed) for seed in self.seeds]
     self.arrivalTimes = [sum(dist[:i+1]) for i in range(8)]
@@ -124,29 +129,31 @@ class ArrivalOfCars(Frame):
       Label(self, text = str(a)).grid(row = 2 + i, column = 1)
 
     #Service Time calculations
-    self.serviceBoxes = []
-    self.serviceTimes = [random.randint(int(self.params[A]), int(self.params[B])) for i in range(8)]
-    Label(self, text = "Service Times (seconds)").grid(row = 1, column = 2)
-    for i, s in enumerate(self.serviceTimes):
+    randomNums = [random.random() for i in range(8)]
+    self.randomNumBoxes = []
+    Label(self, text = "Random Nums").grid(row = 1, column = 2)
+    for i, r in enumerate(randomNums):
       newEntry = Entry(self)
-      newEntry.insert(0, str(s))
+      newEntry.insert(0, str(r))
       newEntry.grid(row = 2 + i, column = 2)
+      self.randomNumBoxes.append(newEntry)
+
+    self.serviceBoxes = []
+    self.serviceTimes = [float(self.params[A]) + (randomNums[i]*(float(self.params[B])-float(self.params[A]))) for i in range(8)]
+    Label(self, text = "Service Times (seconds)").grid(row = 1, column = 3)
+    for i, s in enumerate(self.serviceTimes):
+      newEntry = Label(self, text = str(s))
+      newEntry.grid(row = 2 + i, column = 3)
       self.serviceBoxes.append(newEntry)
 
     #Queue and Done time calculations
     self.queueBoxes = []
-    queue1 = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60)]
-    queue2 = [self.arrivalTimes[1] + (float(self.serviceTimes[1])/60)]
-    Label(self, text = "Queue").grid(row = 1, column = 3)
-    l = Label(self, text = "1st")
-    l.grid(row = 2, column = 3)
-    self.queueBoxes.append(l)
-    l = Label(self, text = "2nd")
-    l.grid(row = 3, column = 3)
-    self.queueBoxes.append(l)
+    queue1 = []
+    queue2 = []
+    Label(self, text = "Queue", width = 8).grid(row = 1, column = 4)
 
-    self.doneTimes = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60), self.arrivalTimes[1] + (float(self.serviceTimes[1])/60)]
-    for i in range(2, 8):
+    self.doneTimes = []
+    for i in range(0, 8):
       for c in queue1:
         if c < self.arrivalTimes[i]:
           queue1.remove(c)
@@ -165,8 +172,8 @@ class ArrivalOfCars(Frame):
         else:
           queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
-        l = Label(self, text = "1st")
-        l.grid(row = 2 + i, column = 3)
+        l = Label(self, text = "Left")
+        l.grid(row = 2 + i, column = 4)
         self.queueBoxes.append(l)
       else:
         if(len(queue2) > 0):
@@ -175,34 +182,38 @@ class ArrivalOfCars(Frame):
         else:
           queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
-        l = Label(self, text = "2nd")
-        l.grid(row = 2 + i, column = 3)
+        l = Label(self, text = "Right")
+        l.grid(row = 2 + i, column = 4)
         self.queueBoxes.append(l)
 
     self.doneBoxes = []
-    Label(self, text = "Done Times (minutes)").grid(row = 1, column = 4)
+    Label(self, text = "Done Times (minutes)").grid(row = 1, column = 5)
     for i, d in enumerate(self.doneTimes):
       newL = Label(self, text = str(d))
-      newL.grid(row = 2 + i, column = 4)
+      newL.grid(row = 2 + i, column = 5)
       self.doneBoxes.append(newL)
 
 
     #a couple useful buttons...
-    Recalc = Button(self, text='Recalculate with these service times!', command=self.calculate)
+    Recalc = Button(self, text='Recalculate service times!', command=self.calculate)
     Recalc.grid(row = 10, column = 2, columnspan = 1)
     Entrance = Button(self, text='Move to Park Entrance!', command=self.next)
-    Entrance.grid(row = 10, column = 4, columnspan = 1)
+    Entrance.grid(row = 10, column = 3, columnspan = 1)
 
   def calculate(self):
-    self.serviceTimes = []
-    for s in self.serviceBoxes:
-      self.serviceTimes.append(int(s.get()))
+    randomNums = []
+    for i, r in enumerate(self.randomNumBoxes):
+      randomNums.append(float(r.get()))
 
-    queue1 = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60)]  #append done times to each queue
-    queue2 = [self.arrivalTimes[1] + (float(self.serviceTimes[1])/60)]
+    self.serviceTimes = [float(self.params[A]) + (randomNums[i]*(float(self.params[B])-float(self.params[A]))) for i in range(8)]
+    for i, s in enumerate(self.serviceTimes):
+      serviceBoxes[i].config(text = str(s))
 
-    self.doneTimes = [self.arrivalTimes[0] + (float(self.serviceTimes[0])/60), self.arrivalTimes[1] + (float(self.serviceTimes[1])/60)]
-    for i in range(2, 8):
+    queue1 = []  #append done times to each queue
+    queue2 = []
+
+    self.doneTimes = []
+    for i in range(0, 8):
       for c in queue1:
         if c < self.arrivalTimes[i]:
           queue1.remove(c)
@@ -221,7 +232,7 @@ class ArrivalOfCars(Frame):
         else:
           queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
-        self.queueBoxes[i].config(text = "1st")
+        self.queueBoxes[i].config(text = "Left")
       else:
         if(len(queue2) > 0):
           queue2.append(queue2[-1] + (float(self.serviceTimes[i])/60))
@@ -229,7 +240,7 @@ class ArrivalOfCars(Frame):
         else:
           queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
           self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
-        self.queueBoxes[i].config(text = "2nd")
+        self.queueBoxes[i].config(text = "Right")
 
     for i, d in enumerate(self.doneTimes):
       self.doneBoxes[i].config(text = str(d))
@@ -237,8 +248,8 @@ class ArrivalOfCars(Frame):
   def next(self):
     PEroot = Tk()
     PEroot.resizable(width=False, height=False)
-    PEroot.geometry('{}x{}'.format(720, 275))
-    ParkEntrance(AOCroot, self.arrivalTimes, self.serviceTime, self.doneTimes, params).grid()
+    PEroot.geometry('{}x{}'.format(720, 550))
+    ParkEntrance(PEroot, self.arrivalTimes, self.serviceTimes, self.doneTimes, self.params).grid()
 
 class ParkEntrance(Frame):
   global seeds
@@ -247,10 +258,135 @@ class ParkEntrance(Frame):
   global doneBoxes, queueBoxes
 
   def __init__(self, root, a, s, d, p):
-    self.startTimes = d
+    self.startTimes = [(x, y+1) for y,x in enumerate(d)]
+    self.startTimes.sort()
     self.params = p
 
     Frame.__init__(self, root)
+
+    #Family numbers
+    Label(self, text = "Family #").grid(row = 1, column = 0)
+    for i in range(8):
+      Label(self, text = str(self.startTimes[i][1])).grid(row = 2 + i, column = 0)
+
+    #Generate and calculate movement time
+    self.Ys = [random.random() for i in range(8)]
+    self.YBoxes = []
+    Label(self, text = "Random Nums").grid (row = 1, column = 1)
+    for i, s in enumerate(self.Ys):
+      newEntry = Entry(self)
+      newEntry.insert(0, str(s))
+      newEntry.grid(row = 2 + i, column = 1)
+      self.YBoxes.append(newEntry)
+
+    self.Zs = []
+    for i in range(0,8,2):
+      self.Zs.append(math.sin(2*math.pi*self.Ys[i])*math.sqrt((-2)*math.log(self.Ys[i+1])))
+      self.Zs.append(math.cos(2*math.pi*self.Ys[i])*math.sqrt((-2)*math.log(self.Ys[i+1])))
+
+    self.Xs = [(float(self.params[SIGMA])*z) + float(self.params[MU]) if (float(self.params[SIGMA])*z) + float(self.params[MU]) > 0 else 0 for z in self.Zs]
+    self.XBoxes = []
+    Label(self, text = "Movement Times (minutes)").grid(row = 1, column = 2)
+    for i, s in enumerate(self.Xs):
+      newEntry = Label(self, text = str(s))
+      newEntry.grid(row = 2 + i, column = 2)
+      self.XBoxes.append(newEntry)
+
+    #Display enter queue time
+    self.queueEnterTimes = []
+    self.queueEnterBoxes = []
+    Label(self, text = "Enter Queue Time (minutes)").grid (row = 1, column = 3)
+    for i, x in enumerate(self.Xs):
+      newEntry = Label(self, text = str(x + self.startTimes[i][0]))
+      newEntry.grid(row = 2 + i, column = 3)
+      self.queueEnterBoxes.append(newEntry)
+      self.queueEnterTimes.append((x + self.startTimes[i][0], self.startTimes[i][1]))
+
+    self.queueEnterTimes.sort()
+
+    #Family numbers
+    Label(self, text = "Family #").grid(row = 1, column = 0)
+    for i in range(8):
+      Label(self, text = str(self.queueEnterTimes[i][1])).grid(row = 13 + i, column = 0)
+
+    #Calculate and display family sizes
+    self.randomNums = [random.random() for i in range(8)]
+    self.randomNumBoxes = []
+    Label(self, text = "Random Nums").grid (row = 12, column = 1)
+    for i, s in enumerate(self.randomNums):
+      newEntry = Entry(self)
+      newEntry.insert(0, str(s))
+      newEntry.grid(row = 13 + i, column = 1)
+      self.randomNumBoxes.append(newEntry)
+
+    Label(self, text = "Family Size").grid (row = 12, column = 2)
+    self.familySizes = []
+    self.familySizeBoxes = []
+    for i, r in enumerate(self.randomNums):
+      if r < 0.1:
+        self.familySizes.append((1, self.queueEnterTimes[i][1]))
+        newEntry = Label(self, text = "1 person")
+      elif r < 0.4:
+        self.familySizes.append((2, self.queueEnterTimes[i][1]))
+        newEntry = Label(self, text = "2 people")
+      elif r < 0.8:
+        self.familySizes.append((3, self.queueEnterTimes[i][1]))
+        newEntry = Label(self, text = "3 people")
+      else:
+        self.familySizes.append((4, self.queueEnterTimes[i][1]))
+        newEntry = Label(self, text = "4 people")
+      newEntry.grid(row = 13 + i, column = 2)
+      self.familySizeBoxes.append(newEntry)
+
+    #Ticketbooth nonsense
+
+
+    #Helpful Buttons
+    RecalcMovement = Button(self, text='Recalculate Movement Times!', command=self.calcMove)
+    RecalcMovement.grid(row = 10, column = 2, columnspan = 1)
+    RecalcFamilies = Button(self, text='Recalculate Family Sizes!', command=self.calcSize)
+    RecalcFamilies.grid(row = 21, column = 2, columnspan = 1)
+    
+
+  def calcMove(self):
+    self.Ys = []
+    for i, y in enumerate(self.YBoxes):
+      self.Ys.append(float(y.get()))
+
+    self.Zs = []
+    for i in range(0,8,2):
+      self.Zs.append(math.sin(2*math.pi*self.Ys[i])*math.sqrt((-2)*math.log(self.Ys[i+1])))
+      self.Zs.append(math.cos(2*math.pi*self.Ys[i])*math.sqrt((-2)*math.log(self.Ys[i+1])))
+
+    self.Xs = [(float(self.params[SIGMA])*z) + float(self.params[MU]) if (float(self.params[SIGMA])*z) + float(self.params[MU]) > 0 else 0 for z in self.Zs]
+    for i, x in enumerate(self.XBoxes):
+      x.config(text = str(self.Xs[i]))
+
+    #Display enter queue time
+    self.queueEnterTimes = []
+    for i, t in enumerate(self.queueEnterBoxes):
+      t.config(text = str(self.Xs[i] + self.startTimes[i][0]))
+      self.queueEnterTimes.append((self.Xs[i] + self.startTimes[i][0], self.startTimes[i][1]))
+
+  def calcSize(self):
+    self.randomNums = []
+    for r in self.randomNumBoxes:
+     self.randomNums.append(float(r.get()))
+
+    self.familySizes = []
+    for i, r in enumerate(self.randomNumBoxes):
+      if float(r.get()) < 0.1:
+        self.familySizes.append((1, self.queueEnterTimes[i][1]))
+        self.familySizeBoxes[i].config(text = "1 person")
+      elif float(r.get()) < 0.4:
+        self.familySizes.append((2, self.queueEnterTimes[i][1]))
+        self.familySizeBoxes[i].config(text = "2 people")
+      elif float(r.get()) < 0.8:
+        self.familySizes.append((3, self.queueEnterTimes[i][1]))
+        self.familySizeBoxes[i].config(text = "3 people")
+      else:
+        self.familySizes.append((4, self.queueEnterTimes[i][1]))
+        self.familySizeBoxes[i].config(text = "4 people")
 
 if __name__=='__main__':
   root = Tk()
