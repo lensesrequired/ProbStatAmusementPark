@@ -67,7 +67,7 @@ class AmusementPark(Frame):
   def next(self):
     AOCroot = Tk()
     AOCroot.resizable(width=False, height=False)
-    AOCroot.geometry('{}x{}'.format(950, 275))    
+    AOCroot.geometry('{}x{}'.format(1000, 275))    
     params = [0 for i in range(7)]
     params[LAM] = self.lam.get()
     params[A] = self.a.get()
@@ -123,8 +123,8 @@ class ArrivalOfCars(Frame):
       self.randomNumBoxes.append(newEntry)
 
     self.serviceBoxes = []
-    self.serviceTimes = [float(self.params[A]) + (randomNums[i]*(float(self.params[B])-float(self.params[A]))) for i in range(8)]
-    Label(self, text = "Service Times (seconds)").grid(row = 1, column = 4)
+    self.serviceTimes = [(float(self.params[A])/60) + (randomNums[i]*((float(self.params[B])/60)-(float(self.params[A])/60))) for i in range(8)]
+    Label(self, text = "Service Times (minutes)").grid(row = 1, column = 4)
     for i, s in enumerate(self.serviceTimes):
       newEntry = Label(self, text = str(s))
       newEntry.grid(row = 2 + i, column = 4)
@@ -135,7 +135,6 @@ class ArrivalOfCars(Frame):
     queue1 = []
     queue2 = []
     Label(self, text = "Queue", width = 8).grid(row = 1, column = 5)
-
     self.doneTimes = []
     for i in range(0, 8):
       for c in queue1:
@@ -151,21 +150,21 @@ class ArrivalOfCars(Frame):
 
       if(len(queue1) <= len(queue2)):
         if(len(queue1) > 0):
-          queue1.append(queue1[-1] + (float(self.serviceTimes[i])/60))
-          self.doneTimes.append(queue1[-1] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(max(queue1[-1], self.arrivalTimes[i]) +(float(self.serviceTimes[i])))
+          queue1.append(max(queue1[-1], self.arrivalTimes[i]) +(float(self.serviceTimes[i])))
         else:
-          queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
-          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
+          queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])))          
+          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])))
         l = Label(self, text = "Left")
         l.grid(row = 2 + i, column = 5)
         self.queueBoxes.append(l)
       else:
         if(len(queue2) > 0):
-          queue2.append(queue2[-1] +(float(self.serviceTimes[i])/60))
-          self.doneTimes.append(queue2[-1] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(max(queue2[-1], self.arrivalTimes[i]) +(float(self.serviceTimes[i])))
+          queue2.append(max(queue2[-1], self.arrivalTimes[i]) +(float(self.serviceTimes[i])))
         else:
-          queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
-          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
+          queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])))          
+          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])))
         l = Label(self, text = "Right")
         l.grid(row = 2 + i, column = 5)
         self.queueBoxes.append(l)
@@ -176,6 +175,23 @@ class ArrivalOfCars(Frame):
       newL = Label(self, text = str(d))
       newL.grid(row = 2 + i, column = 6)
       self.doneBoxes.append(newL)
+
+    self.waitTimes = []
+    self.waitBoxes = []
+    Label(self, text = "Wait Times (minutes)").grid(row = 1, column = 7)
+    for i in range(len(self.doneTimes)):
+      self.waitTimes.append(self.doneTimes[i] - (self.serviceTimes[i]+self.arrivalTimes[i]))
+      newL = Label(self, text = str(self.doneTimes[i] - (self.serviceTimes[i]+self.arrivalTimes[i])))
+      newL.grid(row = 2 + i, column = 7)
+      self.waitBoxes.append(newL)
+
+    waitTimeAvg = sum(self.waitTimes)/len(self.waitTimes)
+    self.waitAvgLbl = Label(self, text = "Average Wait Time (minutes):\n" + str(waitTimeAvg))
+    self.waitAvgLbl.grid(row = 10, column = 7)
+
+    qLenAvg = sum(self.waitTimes)/(2*self.doneTimes[-1])
+    self.qLenLbl = Label(self, text = "Average Queue\nLength: " + str(qLenAvg))
+    self.qLenLbl.grid(row = 10, column = 5)
 
 
     #a couple useful buttons...
@@ -204,7 +220,7 @@ class ArrivalOfCars(Frame):
     for i, r in enumerate(self.randomNumBoxes):
       randomNums.append(float(r.get()))
 
-    self.serviceTimes = [float(self.params[A]) + (randomNums[i]*(float(self.params[B])-float(self.params[A]))) for i in range(8)]
+    self.serviceTimes = [float(self.params[A])/60 + (randomNums[i]*(float(self.params[B])/60-(float(self.params[A])/60))) for i in range(8)]
     for i, s in enumerate(self.serviceTimes):
       self.serviceBoxes[i].config(text = str(s))
 
@@ -212,6 +228,7 @@ class ArrivalOfCars(Frame):
     queue2 = []
 
     self.doneTimes = []
+    self.waitTimes = []
     for i in range(0, 8):
       for c in queue1:
         if c < self.arrivalTimes[i]:
@@ -226,23 +243,33 @@ class ArrivalOfCars(Frame):
 
       if(len(queue1) <= len(queue2)):
         if(len(queue1) > 0):
-          queue1.append(queue1[-1] + (float(self.serviceTimes[i])/60))
-          self.doneTimes.append(queue1[-1] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(max(queue1[-1], self.arrivalTimes[i]) + (float(self.serviceTimes[i])))
+          queue1.append(max(queue1[-1], self.arrivalTimes[i]) + (float(self.serviceTimes[i])))
         else:
-          queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
-          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
+          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])))
+          queue1.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])))          
         self.queueBoxes[i].config(text = "Left")
       else:
         if(len(queue2) > 0):
-          queue2.append(queue2[-1] + (float(self.serviceTimes[i])/60))
-          self.doneTimes.append(queue2[-1] + (float(self.serviceTimes[i])/60))
+          queue2.append(max(queue2[-1], self.arrivalTimes[i]) + (float(self.serviceTimes[i])))
+          self.doneTimes.append(max(queue2[-1], self.arrivalTimes[i]) + (float(self.serviceTimes[i])))
         else:
-          queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])/60))          
-          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])/60))
+          queue2.append(self.arrivalTimes[i] +(float(self.serviceTimes[i])))          
+          self.doneTimes.append(self.arrivalTimes[i] + (float(self.serviceTimes[i])))
         self.queueBoxes[i].config(text = "Right")
 
     for i, d in enumerate(self.doneTimes):
       self.doneBoxes[i].config(text = str(d))
+      self.waitBoxes[i].config(text = str(d - self.arrivalTimes[i]-self.serviceTimes[i]))
+      self.waitTimes.append(d - self.arrivalTimes[i]-self.serviceTimes[i])
+
+    waitTimeAvg = sum(self.waitTimes)/len(self.waitTimes)
+    self.waitAvgLbl.config(text = "Average Wait Time (minutes):\n" + str(waitTimeAvg))
+
+    qLenAvg = sum(self.waitTimes)/(2*self.doneTimes[-1])
+    self.qLenLbl.config(text = "Average Queue\nLength: " + str(qLenAvg))
+
+    
 
   def next(self):
     PEroot = Tk()
@@ -305,8 +332,12 @@ class ParkEntrance(Frame):
 
     #Family numbers
     Label(self, text = "Family #").grid(row = 1, column = 0)
+    #Why were we using queueEnterTimes here, I just wanna know because if
+    #we have to, I need to edit the code I put in
+    #it works perfectly if we use the startTimes though
     for i in range(8):
-      Label(self, text = str(self.queueEnterTimes[i][1])).grid(row = 13 + i, column = 0)
+      Label(self, text = str(self.startTimes[i][1])).grid(row = 13 + i, column = 0)
+#      Label(self, text = str(self.queueEnterTimes[i][1])).grid(row = 13 + i, column = 0)
 
     #Calculate and display family sizes
     self.randomNums = [random.random() for i in range(8)]
@@ -372,6 +403,118 @@ class ParkEntrance(Frame):
       t.config(text = str(self.Xs[i] + self.startTimes[i][0]))
       self.queueEnterTimes.append((self.Xs[i] + self.startTimes[i][0], self.startTimes[i][1]))
 
+    self.calcService()
+
+  def calcService(self):
+    serviceTimes = []
+    for i in range(len(self.familySizes)):
+      service = 0
+      for j in range(self.familySizes[i][0]):
+        service += -float(self.params[THETA])*math.log(1-float(self.gamRandomBoxes[4*i + j].get()))
+      serviceTimes.append((service, self.familySizes[i][1]))
+
+    self.sortedServiceTimes = []
+    for i in range(8):
+      for j in range(8):
+        if self.queueEnterTimes[i][1] == serviceTimes[j][1]:
+          self.sortedServiceTimes.append(serviceTimes[j])
+    self.waitTimes = []
+
+    booth1 = []
+    booth2 = []
+    self.doneTimes = []
+    self.boothDir = []
+    time = 0
+    #sort these the other way for the loop
+    #then sort them back for display
+    for i in range(8):
+      if len(booth1) == 0:
+        booth1.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+        self.doneTimes.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+        self.waitTimes.append(0)
+
+        newDir = Label(self, text = "Left")
+        self.boothDir.append(newDir)
+        newDir.grid(row = 2+i, column = 4)
+        
+      elif len(booth2) == 0:
+        booth2.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+        self.doneTimes.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+        self.waitTimes.append(0)
+
+        newDir = Label(self, text = "Right")
+        self.boothDir.append(newDir)
+        newDir.grid(row = 2+i, column = 4)
+
+      else:
+        if self.queueEnterTimes[i][0] >= booth1[0]:
+          self.waitTimes.append(0)
+          booth1.pop(0)
+          booth1.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+          self.doneTimes.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+
+          newDir = Label(self, text = "Left")
+          self.boothDir.append(newDir)
+          newDir.grid(row = 2+i, column = 4)
+
+        elif self.queueEnterTimes[i][0] >= booth2[0]:
+          self.waitTimes.append(0)
+          booth2.pop(0)
+          booth2.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+          self.doneTimes.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
+
+          newDir = Label(self, text = "Right")
+          self.boothDir.append(newDir)
+          newDir.grid(row = 2+i, column = 4)
+
+        elif min(booth1[0], booth2[0]) == booth1[0]:
+          self.waitTimes.append(booth1[0] - self.queueEnterTimes[i][0])
+          booth1.pop(0)
+          booth1.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
+          self.doneTimes.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
+
+          newDir = Label(self, text = "Left")
+          self.boothDir.append(newDir)
+          newDir.grid(row = 2+i, column = 4)
+
+        elif min(booth1[0], booth2[0]) == booth2[0]:
+          self.waitTimes.append(booth2[0] - self.queueEnterTimes[i][0])
+          booth2.pop(0)
+          booth2.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
+          self.doneTimes.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
+
+          newDir = Label(self, text = "Right")
+          self.boothDir.append(newDir)
+          newDir.grid(row = 2+i, column = 4)
+          
+    self.doneBoxes = []
+    self.waitBoxes = []
+    self.serviceBoxes = []
+    Label(self, text = "Booth").grid(row = 1, column = 4)
+    Label(self, text = "Service Times (minutes)").grid(row = 1, column = 5)
+    Label(self, text = "Wait Times (minutes)").grid(row = 1, column = 7)
+    Label(self, text = "Done Times (minutes)").grid(row = 1, column = 6)
+    for i in range(8):
+      newService = Label(self, text = str(self.sortedServiceTimes[i][0]))
+      newService.grid(row = 2+i, column = 5)
+      self.serviceBoxes.append(newService)
+
+      newWait = Label(self, text = str(self.waitTimes[i]))
+      newWait.grid(row = 2+i, column = 7)
+      self.waitBoxes.append(newWait)
+
+      newDone = Label(self, text = str(self.doneTimes[i]))
+      newDone.grid(row = 2+i, column = 6)
+      self.doneBoxes.append(newDone)
+
+    self.avgWaitTime = sum(self.waitTimes)/len(self.waitTimes)
+    self.avgWaitLbl = Label(self, text = "Average Wait Time\n (minutes): " + str(self.avgWaitTime))
+    self.avgWaitLbl.grid(row = 10, column = 7)
+
+    self.avgQLen = sum(self.waitTimes)/max(self.doneTimes)
+    self.avgQLbl = Label(self, text = "Average Queue Length:\n" + str(self.avgQLen))
+    self.avgQLbl.grid(row = 10, column = 3)
+      
   def calcSize(self):
     self.randomNums = []
     for r in self.randomNumBoxes:
