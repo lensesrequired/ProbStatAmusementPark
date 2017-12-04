@@ -480,9 +480,9 @@ class ParkEntrance(Frame):
 
     #Helpful Buttons
     RecalcMovement = Button(self, text='Recalculate Move Times!', command=self.calcMove)
-    RecalcMovement.grid(row = 10, column = 4, columnspan = 2)
+    RecalcMovement.grid(row = 10, column = 2, columnspan = 1)
     RecalcFamilies = Button(self, text='Recalculate Family Sizes!', command=self.calcSize)
-    RecalcFamilies.grid(row = 10, column = 2, columnspan = 1)
+    RecalcFamilies.grid(row = 10, column = 4, columnspan = 2)
     RecalcService = Button(self, text='Recalculate Service Times!', command=self.calcService)
     RecalcService.grid(row = 21, column = 6, columnspan = 1)
 
@@ -529,7 +529,7 @@ class ParkEntrance(Frame):
     booth1 = []
     booth2 = []
     self.doneTimes = []
-    self.boothDir = []
+    #self.boothDir = []
     time = 0
     #sort these the other way for the loop
     #then sort them back for display
@@ -539,18 +539,22 @@ class ParkEntrance(Frame):
         self.doneTimes.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
         self.waitTimes.append(0)
 
-        newDir = Label(self, text = "Left")
-        self.boothDir.append(newDir)
-        newDir.grid(row = 2+i, column = 4)
+        self.boothDir[i].config(text = "Left")
+
+        #newDir = Label(self, text = "Left")
+        #self.boothDir.append(newDir)
+        #newDir.grid(row = 2+i, column = 4)
         
       elif len(booth2) == 0:
         booth2.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
         self.doneTimes.append(float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
         self.waitTimes.append(0)
 
-        newDir = Label(self, text = "Right")
-        self.boothDir.append(newDir)
-        newDir.grid(row = 2+i, column = 4)
+        self.boothDir[i].config(text = "Right")
+
+        #newDir = Label(self, text = "Right")
+        #self.boothDir.append(newDir)
+        #newDir.grid(row = 2+i, column = 4)
 
       else:
         if self.queueEnterTimes[i][0] >= booth1[0]:
@@ -559,9 +563,11 @@ class ParkEntrance(Frame):
           booth1.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
           self.doneTimes.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
 
-          newDir = Label(self, text = "Left")
-          self.boothDir.append(newDir)
-          newDir.grid(row = 2+i, column = 4)
+          self.boothDir[i].config(text = "Left")
+
+          #newDir = Label(self, text = "Left")
+          #self.boothDir.append(newDir)
+          #newDir.grid(row = 2+i, column = 4)
 
         elif self.queueEnterTimes[i][0] >= booth2[0]:
           self.waitTimes.append(0)
@@ -569,9 +575,10 @@ class ParkEntrance(Frame):
           booth2.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
           self.doneTimes.append(self.waitTimes[-1] + float(self.queueEnterTimes[i][0]) + self.sortedServiceTimes[i][0])
 
-          newDir = Label(self, text = "Right")
-          self.boothDir.append(newDir)
-          newDir.grid(row = 2+i, column = 4)
+          self.boothDir[i].config(text = "Right")
+          #newDir = Label(self, text = "Right")
+          #self.boothDir.append(newDir)
+          #newDir.grid(row = 2+i, column = 4)
 
         elif min(booth1[0], booth2[0]) == booth1[0]:
           self.waitTimes.append(booth1[0] - self.queueEnterTimes[i][0])
@@ -579,9 +586,11 @@ class ParkEntrance(Frame):
           booth1.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
           self.doneTimes.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
 
-          newDir = Label(self, text = "Left")
-          self.boothDir.append(newDir)
-          newDir.grid(row = 2+i, column = 4)
+          self.boothDir[i].config(text = "Left")
+
+          #newDir = Label(self, text = "Left")
+          #self.boothDir.append(newDir)
+          #newDir.grid(row = 2+i, column = 4)
 
         elif min(booth1[0], booth2[0]) == booth2[0]:
           self.waitTimes.append(booth2[0] - self.queueEnterTimes[i][0])
@@ -589,37 +598,42 @@ class ParkEntrance(Frame):
           booth2.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
           self.doneTimes.append(self.waitTimes[-1] + self.queueEnterTimes[i][0] + self.sortedServiceTimes[i][0])
 
-          newDir = Label(self, text = "Right")
-          self.boothDir.append(newDir)
-          newDir.grid(row = 2+i, column = 4)
+          self.boothDir[i].config(text = "Right")
+
+          #newDir = Label(self, text = "Right")
+          #self.boothDir.append(newDir)
+          #newDir.grid(row = 2+i, column = 4)
           
-    self.doneBoxes = []
-    self.waitBoxes = []
-    self.serviceBoxes = []
-    Label(self, text = "Booth").grid(row = 1, column = 4)
-    Label(self, text = "Service Times (minutes)").grid(row = 1, column = 5)
-    Label(self, text = "Wait Times (minutes)").grid(row = 1, column = 7)
-    Label(self, text = "Done Times (minutes)").grid(row = 1, column = 6)
+    #self.doneBoxes = []
+    #self.waitBoxes = []
+    #self.serviceBoxes = []
+    #Label(self, text = "Booth").grid(row = 1, column = 4)
+    #Label(self, text = "Service Times (minutes)").grid(row = 1, column = 5)
+    #Label(self, text = "Wait Times (minutes)").grid(row = 1, column = 7)
+    #Label(self, text = "Done Times (minutes)").grid(row = 1, column = 6)
     for i in range(8):
-      newService = Label(self, text = str(self.sortedServiceTimes[i][0]))
-      newService.grid(row = 2+i, column = 5)
-      self.serviceBoxes.append(newService)
+      self.serviceBoxes[i].config(text = self.sortedServiceTimes[i][0])
+      #newService = Label(self, text = str(self.sortedServiceTimes[i][0]))
+      #newService.grid(row = 2+i, column = 5)
+      #self.serviceBoxes.append(newService)
 
-      newWait = Label(self, text = str(self.waitTimes[i]))
-      newWait.grid(row = 2+i, column = 7)
-      self.waitBoxes.append(newWait)
+      self.waitBoxes[i].config(text = str(self.waitTimes[i]))
+      #newWait = Label(self, text = str(self.waitTimes[i]))
+      #newWait.grid(row = 2+i, column = 7)
+      #self.waitBoxes.append(newWait)
 
-      newDone = Label(self, text = str(self.doneTimes[i]))
-      newDone.grid(row = 2+i, column = 6)
-      self.doneBoxes.append(newDone)
+      self.doneBoxes[i].config(text = str(self.doneTimes[i]))
+      #newDone = Label(self, text = str(self.doneTimes[i]))
+      #newDone.grid(row = 2+i, column = 6)
+      #self.doneBoxes.append(newDone)
 
-    self.avgWaitTime = sum(self.waitTimes)/len(self.waitTimes)
-    self.avgWaitLbl = Label(self, text = "Average Wait Time\n (minutes): " + str(self.avgWaitTime))
-    self.avgWaitLbl.grid(row = 10, column = 7)
+    #self.avgWaitTime = sum(self.waitTimes)/len(self.waitTimes)
+    self.avgWaitLbl.config(text = "Average Wait Time\n (minutes): " + str(self.avgWaitTime)) #Label(self, text = "Average Wait Time\n (minutes): " + str(self.avgWaitTime))
+    #self.avgWaitLbl.grid(row = 10, column = 7)
 
-    self.avgQLen = sum(self.waitTimes)/max(self.doneTimes)
-    self.avgQLbl = Label(self, text = "Average Queue Length:\n" + str(self.avgQLen))
-    self.avgQLbl.grid(row = 10, column = 3)
+    #self.avgQLen = sum(self.waitTimes)/max(self.doneTimes)
+    self.avgQLbl.config(text = "Average Queue Length:\n" + str(self.avgQLen)) #Label(self, text = "Average Queue Length:\n" + str(self.avgQLen))
+    #self.avgQLbl.grid(row = 10, column = 3)
       
   def calcSize(self):
     self.randomNums = []
