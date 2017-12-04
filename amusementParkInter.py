@@ -1,6 +1,6 @@
 from Tkinter import *
 import Tkconstants, tkFileDialog
-import amusementParkMaths, amusementParkMisc
+#import amusementParkMaths, amusementParkMisc
 import os, random, math, copy
 from shutil import copyfile
 
@@ -627,11 +627,11 @@ class ParkEntrance(Frame):
       #newDone.grid(row = 2+i, column = 6)
       #self.doneBoxes.append(newDone)
 
-    #self.avgWaitTime = sum(self.waitTimes)/len(self.waitTimes)
+    self.avgWaitTime = sum(self.waitTimes)/len(self.waitTimes)
     self.avgWaitLbl.config(text = "Average Wait Time\n (minutes): " + str(self.avgWaitTime)) #Label(self, text = "Average Wait Time\n (minutes): " + str(self.avgWaitTime))
     #self.avgWaitLbl.grid(row = 10, column = 7)
 
-    #self.avgQLen = sum(self.waitTimes)/max(self.doneTimes)
+    self.avgQLen = sum(self.waitTimes)/max(self.doneTimes)
     self.avgQLbl.config(text = "Average Queue Length:\n" + str(self.avgQLen)) #Label(self, text = "Average Queue Length:\n" + str(self.avgQLen))
     #self.avgQLbl.grid(row = 10, column = 3)
       
