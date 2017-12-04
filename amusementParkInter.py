@@ -859,17 +859,15 @@ class RollerCoaster(Frame):
 
             famAll = []
             for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
-                famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3], randListTravel[i], self.travelTimes[i], self.randomCall[i]))
+                famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3], self.travelTimes[i]))
             self.famAll = famAll[:]
             self.famAll.sort()
 
-            self.randomCall = []
             self.arrivalTimes = []
             self.travelTimes = []
             for i in range(8):
                 self.arrivalTimes.append(self.famAll[i][0])
-                self.travelTimes.append(self.famAll[i][5])
-                self.randomCall.append(self.famAll[i][6])
+                self.travelTimes.append(self.famAll[i][4])
 
             self.famSize1 = []
             self.famSize2 = []
@@ -881,7 +879,6 @@ class RollerCoaster(Frame):
                 self.famSize1.append(self.famAll[i][2])
                 self.famSize2.append(self.famAll[i][2])
                 self.famNums.append(self.famAll[i][1])
-                randTravel.append(self.famAll[i][4])
                 for j in range(self.famSize1[i]):
                     self.startTimes.append(self.famAll[i][3])
             
@@ -905,8 +902,8 @@ class RollerCoaster(Frame):
 
             #set up random number entry boxes for movement and being loaded onto the coaster
             for i in range(8):
-                self.randomTravels[i].delete(0, 'end')
-                self.randomTravels[i].insert(0, str(randTravel[i]))
+                #self.randomTravels[i].delete(0, 'end')
+                #self.randomTravels[i].insert(0, str(randListTravel[i]))
                 self.randomTravels[i].grid(row = 2 + sum(self.famSize1[:i]), column = 2, rowspan = self.famSize1[i], sticky = "news")
             
 
