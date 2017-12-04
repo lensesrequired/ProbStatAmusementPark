@@ -653,7 +653,7 @@ class ParkEntrance(Frame):
       #print("family " + str(self.startTimes[i][1]) + " of size " + str(self.familySizes[i][0]) + " finished at " + self.doneBoxes[i]["text"])
     
     RCroot = Tk()
-    RCroot.resizable(width=False, height=False)
+    RCroot.resizable(width=True, height=True)
     RCroot.geometry('{}x{}'.format(1050, max(25*sum(famSizeList), 300)))
     RollerCoaster(RCroot, doneTimeList, famSizeList, famNumList, self.params).grid()
 
@@ -826,16 +826,14 @@ class RollerCoaster(Frame):
           self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
           self.arrivalTimes = []
 
-##            for i in range(8):
-##                print(self.origFamAll[i][1])
-##                print(self.travelTimes[i])
-##                print(self.origFamAll[i][3])
-##                print(self.travelTimes[i] + self.origFamAll[i][3])
-
+          # for i in range(8):
+          #     print(self.origFamAll[i][1])
+          #     print(self.travelTimes[i])
+          #     print(self.origFamAll[i][3])
+          #     print(self.travelTimes[i] + self.origFamAll[i][3])
 
           for i in range(8):
               self.arrivalTimes.append(self.origFamAll[i][3] + self.travelTimes[i])
-
 
           famAll = []
           for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
@@ -894,10 +892,6 @@ class RollerCoaster(Frame):
                   self.arrivalBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.arrivalTimes[i]))
           self.calcService(True)
 
-
-      
-
-
   def calcService(self, buttonPush):
       if buttonPush == False:
           self.loadTimes = [(26*float(y.get())+1)**(float(1)/3) for y in self.randomLoads]
@@ -935,8 +929,6 @@ class RollerCoaster(Frame):
           noModRide -= 4
         self.calcDone(True)
           
-
-
   def calcDone(self, buttonPush):
       #create local copies of everything to avoid those globals from being changed
       famSize3 = self.famSize1[:]
@@ -1031,7 +1023,7 @@ class RollerCoaster(Frame):
               self.waitBoxes[i].config(text = str(waitTime[i]))
           self.waitLbl.config(text = "Average Wait Time (min):\n" + str(self.avgWaitTime))
           self.qLenLbl.config(text = "Average Queue Length:\n" + str(self.avgQLen))
-                      
+
   def nonZero(self, mylist):
       for i in range(len(mylist)):
           if mylist[i] > 0:
