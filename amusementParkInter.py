@@ -677,6 +677,7 @@ class RollerCoaster(Frame):
   global avgQLen, qLenLbl
   global famNumLbls
   global recalcArriveBtn, recalcServeBtn
+  global randomCall
   
 
   def __init__(self, root, d, f, n, p):
@@ -705,6 +706,7 @@ class RollerCoaster(Frame):
       self.doneBoxes = []
       self.famNumLbls = []
       randListTravel = [random.random() for i in range(8)]
+      self.randomCall = randListTravel[:]
       self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
       self.allPeople = sum(f)
       self.totalPeople = sum(f)
@@ -823,74 +825,82 @@ class RollerCoaster(Frame):
       else:
           mylist = ["First", "Second", "Third", "Fourth"] #["1st", "2nd", "3rd", "4th"]
           randListTravel = [float(y.get()) for y in self.randomTravels]
-          self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
-          self.arrivalTimes = []
+          go = False
+          for i in range(len(self.randomCall)):
+            if self.randomCall[i] != randListTravel[i] and abs(self.randomCall[i] - randListTravel[i]) > 0.00000000001:
+              go = True
+          if go == True:
+            self.randomCall = [float(y.get()) for y in self.randomTravels]
+            self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
+            self.arrivalTimes = []
 
-          # for i in range(8):
-          #     print(self.origFamAll[i][1])
-          #     print(self.travelTimes[i])
-          #     print(self.origFamAll[i][3])
-          #     print(self.travelTimes[i] + self.origFamAll[i][3])
+            # for i in range(8):
+            #     print(self.origFamAll[i][1])
+            #     print(self.travelTimes[i])
+            #     print(self.origFamAll[i][3])
+            #     print(self.travelTimes[i] + self.origFamAll[i][3])
 
-          for i in range(8):
-              self.arrivalTimes.append(self.origFamAll[i][3] + self.travelTimes[i])
+            for i in range(8):
+                self.arrivalTimes.append(self.origFamAll[i][3] + self.travelTimes[i])
 
-          famAll = []
-          for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
-              famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3], randListTravel[i], self.travelTimes[i]))
-          self.famAll = famAll[:]
-          self.famAll.sort()
+            famAll = []
+            for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
+                famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3], randListTravel[i], self.travelTimes[i], self.randomCall[i]))
+            self.famAll = famAll[:]
+            self.famAll.sort()
 
-          self.arrivalTimes = []
-          self.travelTimes = []
-          for i in range(8):
-              self.arrivalTimes.append(self.famAll[i][0])
-              self.travelTimes.append(self.famAll[i][5])
+            self.randomCall = []
+            self.arrivalTimes = []
+            self.travelTimes = []
+            for i in range(8):
+                self.arrivalTimes.append(self.famAll[i][0])
+                self.travelTimes.append(self.famAll[i][5])
+                self.randomCall.append(self.famAll[i][6])
 
-          self.famSize1 = []
-          self.famSize2 = []
-          self.famNums = []
-          self.startTimes = []
-          randTravel = []
-          for i in range(len(self.famAll)):
-              #print(self.famAll[i][3])
-              self.famSize1.append(self.famAll[i][2])
-              self.famSize2.append(self.famAll[i][2])
-              self.famNums.append(self.famAll[i][1])
-              randTravel.append(self.famAll[i][4])
-              for j in range(self.famSize1[i]):
-                  self.startTimes.append(self.famAll[i][3])
-          
-          #get a copy of the last family's size
-          self.lastFamSize = self.famSize1[-1]
+            self.famSize1 = []
+            self.famSize2 = []
+            self.famNums = []
+            self.startTimes = []
+            randTravel = []
+            for i in range(len(self.famAll)):
+                #print(self.famAll[i][3])
+                self.famSize1.append(self.famAll[i][2])
+                self.famSize2.append(self.famAll[i][2])
+                self.famNums.append(self.famAll[i][1])
+                randTravel.append(self.famAll[i][4])
+                for j in range(self.famSize1[i]):
+                    self.startTimes.append(self.famAll[i][3])
+            
+            #get a copy of the last family's size
+            self.lastFamSize = self.famSize1[-1]
 
-          #remember how many times the coaster will need to run to serve each person
-          if self.allPeople % 4 == 0:
-              self.numLoads = self.allPeople/4
-          else:
-              self.numLoads = self.allPeople/4 + 1
+            #remember how many times the coaster will need to run to serve each person
+            if self.allPeople % 4 == 0:
+                self.numLoads = self.allPeople/4
+            else:
+                self.numLoads = self.allPeople/4 + 1
 
-          numIndividList = []
-          #remember each individual and their place in their family
-          for i in range(len(self.famSize1)):
-              for j in range(self.famSize1[i]):
-                  numIndividList.append((self.famNums[i], mylist[j]))
-          
-          for i in range(self.allPeople):
-              self.famNumLbls[i].config(text = "Family " +  str(numIndividList[i][0]) + ", " + numIndividList[i][1])
+            numIndividList = []
+            #remember each individual and their place in their family
+            for i in range(len(self.famSize1)):
+                for j in range(self.famSize1[i]):
+                    numIndividList.append((self.famNums[i], mylist[j]))
+            
+            for i in range(self.allPeople):
+                self.famNumLbls[i].config(text = "Family " +  str(numIndividList[i][0]) + ", " + numIndividList[i][1])
 
-          #set up random number entry boxes for movement and being loaded onto the coaster
-          for i in range(8):
-              self.randomTravels[i].delete(0, 'end')
-              self.randomTravels[i].insert(0, str(randTravel[i]))
-              self.randomTravels[i].grid(row = 2 + sum(self.famSize1[:i]), column = 2, rowspan = self.famSize1[i], sticky = "news")
-          
+            #set up random number entry boxes for movement and being loaded onto the coaster
+            for i in range(8):
+                self.randomTravels[i].delete(0, 'end')
+                self.randomTravels[i].insert(0, str(randTravel[i]))
+                self.randomTravels[i].grid(row = 2 + sum(self.famSize1[:i]), column = 2, rowspan = self.famSize1[i], sticky = "news")
+            
 
-          for i in range(8):
-              for j in range(self.famSize1[i]):
-                  self.travelBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.travelTimes[i]))
-                  self.arrivalBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.arrivalTimes[i]))
-          self.calcService(True)
+            for i in range(8):
+                for j in range(self.famSize1[i]):
+                    self.travelBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.travelTimes[i]))
+                    self.arrivalBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.arrivalTimes[i]))
+            self.calcService(True)
 
   def calcService(self, buttonPush):
       if buttonPush == False:
