@@ -11,6 +11,7 @@ MU = 3
 SIGMA = 4
 ALPHA = 5
 THETA = 6
+EXPTHETA = 7
 
 class AmusementPark(Frame):
 
@@ -20,17 +21,17 @@ class AmusementPark(Frame):
 
     Frame.__init__(self, root)
 
-    Label(self, text = "At any point in the program you can type in your own random numbers").grid(row = 0, column = 1, columnspan = 8)
-    Label(self, text = "and hit a recalculate button to use your own values").grid(row = 1, column = 1, columnspan = 8)
+    Label(self, text = "At any point in the program you can type in your own random numbers").grid(row = 0, column = 1, columnspan = 10)
+    Label(self, text = "and hit a recalculate button to use your own values").grid(row = 1, column = 1, columnspan = 10)
     #parameter controls
     self.setParameterControls()
 
     #a couple useful buttons...
     Arrivals = Button(self, text='Arrival of Cars!', command=self.next)
-    Arrivals.grid(row = 6, column = 4, columnspan = 2)
+    Arrivals.grid(row = 6, column = 5, columnspan = 2)
 
   def setParameterControls(self):
-    Label(self, text = "Set Parameters").grid(row = 2, column = 1, columnspan = 8)
+    Label(self, text = "Set Parameters").grid(row = 2, column = 1, columnspan = 10)
 
     Label(self, text = "Possion/Exponential", width = 20).grid(row = 3, column = 1, columnspan = 2)
     Label(self, text = "Lambda").grid(row = 4, column = 1)
@@ -64,17 +65,24 @@ class AmusementPark(Frame):
     self.theta.grid(row = 4, column = 8)
     self.theta.insert(0, "1")
 
+    Label(self, text = "Exponential", width = 15).grid(row = 3, column = 9, columnspan = 2)
+    Label(self, text = "Theta").grid(row = 4, column = 9)
+    self.exptheta = Entry(self, width = 5)
+    self.exptheta.grid(row = 4, column = 10)
+    self.exptheta.insert(0, "3")
+
   def next(self):
     AOCroot = Tk()
     AOCroot.resizable(width=True, height=True)
     AOCroot.geometry('{}x{}'.format(1230, 290))    
-    params = [0 for i in range(7)]
+    params = [0 for i in range(8)]
     params[LAM] = self.lam.get()
     params[A] = self.a.get()
     params[B] = self.b.get()
     params[MU] = self.mu.get()
     params[SIGMA] = self.sigma.get()
     params[THETA] = self.theta.get()
+    params[EXPTHETA] = self.exptheta.get()
     ArrivalOfCars(AOCroot, params).grid()
 
   def animate(self):
@@ -864,7 +872,7 @@ class RollerCoaster(Frame):
             self.famAll.sort()
 
             self.arrivalTimes = []
-            self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
+            self.travelTimes = [-(1/float(self.params[EXPTHETA]))*math.log(1-float(y)) for y in randListTravel]
             for i in range(8):
                 self.arrivalTimes.append(self.famAll[i][0])
                 #self.travelTimes.append(self.famAll[i][4])
