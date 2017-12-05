@@ -845,7 +845,7 @@ class RollerCoaster(Frame):
               go = True
           if go == True:
             self.randomCall = [float(y.get()) for y in self.randomTravels]
-            self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
+            #self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
             self.arrivalTimes = []
 
             # for i in range(8):
@@ -859,15 +859,15 @@ class RollerCoaster(Frame):
 
             famAll = []
             for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
-                famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3], self.travelTimes[i]))
+                famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3]))#, self.travelTimes[i]))
             self.famAll = famAll[:]
             self.famAll.sort()
 
             self.arrivalTimes = []
-            self.travelTimes = []
+            self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
             for i in range(8):
                 self.arrivalTimes.append(self.famAll[i][0])
-                self.travelTimes.append(self.famAll[i][4])
+                #self.travelTimes.append(self.famAll[i][4])
 
             self.famSize1 = []
             self.famSize2 = []
