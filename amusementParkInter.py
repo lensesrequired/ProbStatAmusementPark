@@ -729,7 +729,7 @@ class RollerCoaster(Frame):
       self.famNumLbls = []
       randListTravel = [random.random() for i in range(8)]
       self.randomCall = randListTravel[:]
-      self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
+      self.travelTimes = [-(1/float(self.params[EXPTHETA]))*math.log(1-float(y)) for y in randListTravel]
       self.allPeople = sum(f)
       self.totalPeople = sum(f)
       numIndividList = []
@@ -847,79 +847,78 @@ class RollerCoaster(Frame):
       else:
           mylist = ["First", "Second", "Third", "Fourth"] #["1st", "2nd", "3rd", "4th"]
           randListTravel = [float(y.get()) for y in self.randomTravels]
-          go = False
-          for i in range(len(self.randomCall)):
-            if self.randomCall[i] != randListTravel[i] and abs(self.randomCall[i] - randListTravel[i]) > 0.00000000001:
-              go = True
-          if go == True:
-            self.randomCall = [float(y.get()) for y in self.randomTravels]
-            #self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
-            self.arrivalTimes = []
+##          go = False
+##          for i in range(len(self.randomCall)):
+##            if self.randomCall[i] != randListTravel[i] and abs(self.randomCall[i] - randListTravel[i]) > 0.00000000001:
+##              go = True
+##          if go == True:
+          self.travelTimes = [-(1/float(self.params[EXPTHETA]))*math.log(1-float(y)) for y in randListTravel]
+          self.arrivalTimes = []
 
-            # for i in range(8):
-            #     print(self.origFamAll[i][1])
-            #     print(self.travelTimes[i])
-            #     print(self.origFamAll[i][3])
-            #     print(self.travelTimes[i] + self.origFamAll[i][3])
+          # for i in range(8):
+          #     print(self.origFamAll[i][1])
+          #     print(self.travelTimes[i])
+          #     print(self.origFamAll[i][3])
+          #     print(self.travelTimes[i] + self.origFamAll[i][3])
 
-            for i in range(8):
-                self.arrivalTimes.append(self.origFamAll[i][3] + self.travelTimes[i])
+          for i in range(8):
+            self.arrivalTimes.append(self.origFamAll[i][3] + self.travelTimes[i])
 
-            famAll = []
-            for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
-                famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3]))#, self.travelTimes[i]))
-            self.famAll = famAll[:]
-            self.famAll.sort()
+##          famAll = []
+##          for i in range(8): #sort by arrival times the arrival times, family booth leave times, family numbers, family sizes, random number for travel, and travel time
+##              famAll.append((self.arrivalTimes[i], self.origFamAll[i][1], self.origFamAll[i][2], self.origFamAll[i][3]))#, self.travelTimes[i]))
+##          self.famAll = famAll[:]
+##          self.famAll.sort()
+##
+##          self.arrivalTimes = []
+##          self.travelTimes = [-(1/float(self.params[THETA]))*math.log(1-float(y)) for y in randListTravel]
+##          for i in range(8):
+##              self.arrivalTimes.append(self.famAll[i][0])
+##              self.travelTimes.append(self.famAll[i][4])
+##
+##          self.famSize1 = []
+##          self.famSize2 = []
+##          self.famNums = []
+##          self.startTimes = []
+##          randTravel = []
+##          for i in range(len(self.famAll)):
+##              #print(self.famAll[i][3])
+##              self.famSize1.append(self.famAll[i][2])
+##              self.famSize2.append(self.famAll[i][2])
+##              self.famNums.append(self.famAll[i][1])
+##              for j in range(self.famSize1[i]):
+##                  self.startTimes.append(self.famAll[i][3])
+          
+##          #get a copy of the last family's size
+##          self.lastFamSize = self.famSize1[-1]
+##
+##          #remember how many times the coaster will need to run to serve each person
+##          if self.allPeople % 4 == 0:
+##              self.numLoads = self.allPeople/4
+##          else:
+##              self.numLoads = self.allPeople/4 + 1
 
-            self.arrivalTimes = []
-            self.travelTimes = [-(1/float(self.params[EXPTHETA]))*math.log(1-float(y)) for y in randListTravel]
-            for i in range(8):
-                self.arrivalTimes.append(self.famAll[i][0])
-                #self.travelTimes.append(self.famAll[i][4])
+##          numIndividList = []
+##          #remember each individual and their place in their family
+##          for i in range(len(self.famSize1)):
+##              for j in range(self.famSize1[i]):
+##                  numIndividList.append((self.famNums[i], mylist[j]))
+##          
+##          for i in range(self.allPeople):
+##              self.famNumLbls[i].config(text = "Family " +  str(numIndividList[i][0]) + ", " + numIndividList[i][1])
 
-            self.famSize1 = []
-            self.famSize2 = []
-            self.famNums = []
-            self.startTimes = []
-            randTravel = []
-            for i in range(len(self.famAll)):
-                #print(self.famAll[i][3])
-                self.famSize1.append(self.famAll[i][2])
-                self.famSize2.append(self.famAll[i][2])
-                self.famNums.append(self.famAll[i][1])
-                for j in range(self.famSize1[i]):
-                    self.startTimes.append(self.famAll[i][3])
-            
-            #get a copy of the last family's size
-            self.lastFamSize = self.famSize1[-1]
+          #set up random number entry boxes for movement and being loaded onto the coaster
+##          for i in range(8):
+##              #self.randomTravels[i].delete(0, 'end')
+##              #self.randomTravels[i].insert(0, str(randListTravel[i]))
+##              self.randomTravels[i].grid(row = 2 + sum(self.famSize1[:i]), column = 2, rowspan = self.famSize1[i], sticky = "news")
+          
 
-            #remember how many times the coaster will need to run to serve each person
-            if self.allPeople % 4 == 0:
-                self.numLoads = self.allPeople/4
-            else:
-                self.numLoads = self.allPeople/4 + 1
-
-            numIndividList = []
-            #remember each individual and their place in their family
-            for i in range(len(self.famSize1)):
-                for j in range(self.famSize1[i]):
-                    numIndividList.append((self.famNums[i], mylist[j]))
-            
-            for i in range(self.allPeople):
-                self.famNumLbls[i].config(text = "Family " +  str(numIndividList[i][0]) + ", " + numIndividList[i][1])
-
-            #set up random number entry boxes for movement and being loaded onto the coaster
-            for i in range(8):
-                #self.randomTravels[i].delete(0, 'end')
-                #self.randomTravels[i].insert(0, str(randListTravel[i]))
-                self.randomTravels[i].grid(row = 2 + sum(self.famSize1[:i]), column = 2, rowspan = self.famSize1[i], sticky = "news")
-            
-
-            for i in range(8):
-                for j in range(self.famSize1[i]):
-                    self.travelBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.travelTimes[i]))
-                    self.arrivalBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.arrivalTimes[i]))
-            self.calcService(True)
+          for i in range(8):
+              for j in range(self.famSize1[i]):
+                  self.travelBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.travelTimes[i]))
+                  self.arrivalBoxes[sum(self.famSize1[:i]) + j].config(text = str(self.arrivalTimes[i]))
+          self.calcService(True)
 
   def calcService(self, buttonPush):
       if buttonPush == False:
@@ -988,22 +987,13 @@ class RollerCoaster(Frame):
       serviceIndex = 0
 
       
-        
-      for i in range(4):
-        doneTime[i] = arrivalTimes[3] + serviceTime[serviceIndex]
+      if buttonPush == False:
+        for i in range(4):
+          doneTime[i] = arrivalTimes[3] + serviceTime[serviceIndex]
 
-      serviceIndex += 1
+        serviceIndex += 1
 
-      if allPeople % 4 == 0:
-        for i in range(7, allPeople, 4):
-          doneTime[i] = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes[i] + serviceTime[serviceIndex])
-          doneTime[i-1] = doneTime[i]
-          doneTime[i-2] = doneTime[i]
-          doneTime[i-3] = doneTime[i]
-
-          serviceIndex += 1
-      if allPeople % 4 != 0:
-        try:
+        if allPeople % 4 == 0:
           for i in range(7, allPeople, 4):
             doneTime[i] = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes[i] + serviceTime[serviceIndex])
             doneTime[i-1] = doneTime[i]
@@ -1011,47 +1001,125 @@ class RollerCoaster(Frame):
             doneTime[i-3] = doneTime[i]
 
             serviceIndex += 1
-        except IndexError:
-          pass
-        index = self.Zero(doneTime)
-        time = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes[-1] + serviceTime[serviceIndex])
-        for i in range(index, allPeople):
-          doneTime[i] = time
+        if allPeople % 4 != 0:
+          try:
+            for i in range(7, allPeople, 4):
+              doneTime[i] = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes[i] + serviceTime[serviceIndex])
+              doneTime[i-1] = doneTime[i]
+              doneTime[i-2] = doneTime[i]
+              doneTime[i-3] = doneTime[i]
+
+              serviceIndex += 1
+          except IndexError:
+            pass
+          index = self.Zero(doneTime)
+          time = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes[-1] + serviceTime[serviceIndex])
+          for i in range(index, allPeople):
+            doneTime[i] = time
 
 
-      for i in range(allPeople):
-        waitTime[i] = doneTime[i] - float(self.loadBoxes[i]["text"]) - arrivalTimes[i]
-      self.doneTimes = doneTime[:]
-      self.waitTimes = waitTime[:]
-      if buttonPush == False:
-          self.doneBoxes = []
-          self.waitBoxes = []
+        for i in range(allPeople):
+          waitTime[i] = doneTime[i] - float(self.loadBoxes[i]["text"]) - arrivalTimes[i]
+        self.doneTimes = doneTime[:]
+        self.waitTimes = waitTime[:]
+        self.doneBoxes = []
+        self.waitBoxes = []
 
-          for i in range(self.allPeople):
-              newLbl = Label(self, text = str(doneTime[i]))
-              newLbl.grid(row = 2 + i, column = 7)
-              self.doneBoxes.append(newLbl)
+        for i in range(self.allPeople):
+            newLbl = Label(self, text = str(doneTime[i]))
+            newLbl.grid(row = 2 + i, column = 7)
+            self.doneBoxes.append(newLbl)
 
-              newLbl = Label(self, text = str(waitTime[i]))
-              newLbl.grid(row = 2 + i, column = 8)
-              self.waitBoxes.append(newLbl)
+            newLbl = Label(self, text = str(waitTime[i]))
+            newLbl.grid(row = 2 + i, column = 8)
+            self.waitBoxes.append(newLbl)
 
-          self.avgWaitTime = sum(waitTime)/self.allPeople
-          self.avgQLen = sum(waitTime)/ max(doneTime)
+        self.avgWaitTime = sum(waitTime)/self.allPeople
+        self.avgQLen = sum(waitTime)/ max(doneTime)
 
-          self.waitLbl = Label(self, text = "Average Wait Time (min):\n" + str(self.avgWaitTime))
-          self.qLenLbl = Label(self, text = "Average Queue Length:\n" + str(self.avgQLen))
+        self.waitLbl = Label(self, text = "Average Wait Time (min):\n" + str(self.avgWaitTime))
+        self.qLenLbl = Label(self, text = "Average Queue Length:\n" + str(self.avgQLen))
 
-          self.waitLbl.grid(row = 2 + self.allPeople, column = 8)
-          self.qLenLbl.grid(row = 2 + self.allPeople, column = 7)
+        self.waitLbl.grid(row = 2 + self.allPeople, column = 8)
+        self.qLenLbl.grid(row = 2 + self.allPeople, column = 7)
       else:
-          self.avgWaitTime = sum(waitTime)/self.allPeople
-          self.avgQLen = sum(waitTime)/ max(doneTime)
-          for i in range(self.allPeople):
-              self.doneBoxes[i].config(text = str(doneTime[i]))
-              self.waitBoxes[i].config(text = str(waitTime[i]))
-          self.waitLbl.config(text = "Average Wait Time (min):\n" + str(self.avgWaitTime))
-          self.qLenLbl.config(text = "Average Queue Length:\n" + str(self.avgQLen))
+        ppleList = []
+        for i in range(allPeople):
+          ppleList.append((arrivalTimes[i], i))
+        ppleList.sort()
+        arrivalTimes2 = []
+        for i in range(allPeople):
+          arrivalTimes2.append(ppleList[i][0])
+        serve = []
+
+
+        for i in range(4):
+          doneTime[i] = arrivalTimes2[3] + serviceTime[serviceIndex]
+          serve.append(serviceTime[serviceIndex])
+
+        serviceIndex += 1
+
+        if allPeople % 4 == 0:
+          for i in range(7, allPeople, 4):
+            doneTime[i] = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes2[i] + serviceTime[serviceIndex])
+            doneTime[i-1] = doneTime[i]
+            doneTime[i-2] = doneTime[i]
+            doneTime[i-3] = doneTime[i]
+            serve.append(serviceTime[serviceIndex])
+            serve.append(serviceTime[serviceIndex])
+            serve.append(serviceTime[serviceIndex])
+            serve.append(serviceTime[serviceIndex])
+
+            serviceIndex += 1
+        if allPeople % 4 != 0:
+          try:
+            for i in range(7, allPeople, 4):
+              doneTime[i] = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes2[i] + serviceTime[serviceIndex])
+              doneTime[i-1] = doneTime[i]
+              doneTime[i-2] = doneTime[i]
+              doneTime[i-3] = doneTime[i]
+              serve.append(serviceTime[serviceIndex])
+              serve.append(serviceTime[serviceIndex])
+              serve.append(serviceTime[serviceIndex])
+              serve.append(serviceTime[serviceIndex])
+
+              serviceIndex += 1
+          except IndexError:
+            pass
+          index = self.Zero(doneTime)
+          
+          time = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes2[-1] + serviceTime[serviceIndex])
+          for i in range(index, allPeople):
+            doneTime[i] = time
+            serve.append(serviceTime[serviceIndex])
+        ppleList2 = []
+        for i in range(allPeople):
+          ppleList2.append((ppleList[i][1], doneTime[i], serve[i]))
+        ppleList2.sort()
+        doneTime2 = []
+        serve2 = []
+        for i in range(allPeople):
+          doneTime2.append(ppleList2[i][1])
+          serve2.append(ppleList2[i][2])
+        for i in range(allPeople):
+          waitTime[i] = doneTime2[i] - serve2[i] - arrivalTimes[i]
+##        famNum = []
+##        famSizes = []
+##        individList = []
+##        for i in range(8):
+##          famNum.append(self.origFamAll[i][1])
+##          famSizes.append(self.origFamAll[i][2])
+##        for i in range(8):
+##          for j in range(famSizes[i]):
+##            individList.append(arrivalTimes[sum(famSizes[:i]+j)], famNum[i]
+        self.avgWaitTime = sum(waitTime)/self.allPeople
+        self.avgQLen = sum(waitTime)/ max(doneTime2)
+        for i in range(self.allPeople):
+            self.doneBoxes[i].config(text = str(doneTime2[i]))
+            self.waitBoxes[i].config(text = str(waitTime[i]))
+            self.loadBoxes[i].config(text = str(serve2[i]))
+        self.waitLbl.config(text = "Average Wait Time (min):\n" + str(self.avgWaitTime))
+        self.qLenLbl.config(text = "Average Queue Length:\n" + str(self.avgQLen))
 
   def nonZero(self, mylist):
       for i in range(len(mylist)):
@@ -1082,6 +1150,6 @@ class RollerCoaster(Frame):
 if __name__=='__main__':
   root = Tk()
   root.resizable(width=True, height=True)
-  root.geometry('{}x{}'.format(490, 250))
+  root.geometry('{}x{}'.format(550, 250))
   AmusementPark(root).grid()
   root.mainloop()
