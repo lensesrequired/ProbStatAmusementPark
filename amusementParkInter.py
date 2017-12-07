@@ -74,7 +74,7 @@ class AmusementPark(Frame):
   def next(self):
     AOCroot = Tk()
     AOCroot.resizable(width=True, height=True)
-    AOCroot.geometry('{}x{}'.format(1230, 290))    
+    AOCroot.geometry('{}x{}'.format(1270, 290))    
     params = [0 for i in range(8)]
     params[LAM] = self.lam.get()
     params[A] = self.a.get()
@@ -280,7 +280,7 @@ class ArrivalOfCars(Frame):
   def next(self):
     PEroot = Tk()
     PEroot.resizable(width=True, height=True)
-    PEroot.geometry('{}x{}'.format(1230, 580))
+    PEroot.geometry('{}x{}'.format(1310, 580))
     ParkEntrance(PEroot, self.arrivalTimes, self.serviceTimes, self.doneTimes, self.params).grid()
 
 class ParkEntrance(Frame):
@@ -517,9 +517,13 @@ class ParkEntrance(Frame):
       t.config(text = str(self.Xs[i] + self.startTimes[i][0]))
       self.queueEnterTimes.append((self.Xs[i] + self.startTimes[i][0], self.startTimes[i][1]))
 
+    self.calcSize()
     self.calcService()
 
   def calcService(self):
+    self.calcMove()
+    self.calcSize()
+
     serviceTimes = []
     for i in range(len(self.familySizes)):
       service = 0
@@ -663,6 +667,9 @@ class ParkEntrance(Frame):
         self.familySizes.append((4, self.queueEnterTimes[i][1]))
         self.familySizeBoxes[i].config(text = "4 people")
 
+    self.calcMove()
+    self.calcService()
+
   def next(self):
     doneTimeList = []
     famSizeList = []
@@ -676,7 +683,7 @@ class ParkEntrance(Frame):
     
     RCroot = Tk()
     RCroot.resizable(width=True, height=True)
-    RCroot.geometry('{}x{}'.format(1050, max(25*sum(famSizeList), 300)))
+    RCroot.geometry('{}x{}'.format(1250, max(25*sum(famSizeList), 300)))
     RollerCoaster(RCroot, doneTimeList, famSizeList, famNumList, self.params).grid()
 
 class RollerCoaster(Frame):
@@ -1150,6 +1157,6 @@ class RollerCoaster(Frame):
 if __name__=='__main__':
   root = Tk()
   root.resizable(width=True, height=True)
-  root.geometry('{}x{}'.format(550, 250))
+  root.geometry('{}x{}'.format(700, 250))
   AmusementPark(root).grid()
   root.mainloop()
