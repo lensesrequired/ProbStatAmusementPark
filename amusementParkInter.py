@@ -517,12 +517,12 @@ class ParkEntrance(Frame):
       t.config(text = str(self.Xs[i] + self.startTimes[i][0]))
       self.queueEnterTimes.append((self.Xs[i] + self.startTimes[i][0], self.startTimes[i][1]))
 
-    self.calcSize()
-    self.calcService()
+    #self.calcSize()
+    #self.calcService()
 
   def calcService(self):
-    self.calcMove()
-    self.calcSize()
+    #self.calcMove()
+    #self.calcSize()
 
     serviceTimes = []
     for i in range(len(self.familySizes)):
@@ -667,8 +667,8 @@ class ParkEntrance(Frame):
         self.familySizes.append((4, self.queueEnterTimes[i][1]))
         self.familySizeBoxes[i].config(text = "4 people")
 
-    self.calcMove()
-    self.calcService()
+    #self.calcMove()
+    #self.calcService()
 
   def next(self):
     doneTimeList = []
@@ -959,8 +959,8 @@ class RollerCoaster(Frame):
           else:
             if noModRide < 1:
               noModRide += 4
-              for j in range(noModRide):
-                self.loadBoxes[i * 4 + j].config(text = str(self.loadTimes[i] + 2))
+            for j in range(noModRide):
+              self.loadBoxes[i * 4 + j].config(text = str(self.loadTimes[i] + 2))
           noModRide -= 4
         self.calcDone(True)
           
@@ -1094,7 +1094,7 @@ class RollerCoaster(Frame):
           except IndexError:
             pass
           index = self.Zero(doneTime)
-          
+          print(serviceTime[serviceIndex])
           time = max((max(doneTime) + serviceTime[serviceIndex]), arrivalTimes2[-1] + serviceTime[serviceIndex])
           for i in range(index, allPeople):
             doneTime[i] = time
